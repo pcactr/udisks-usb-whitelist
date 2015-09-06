@@ -1,0 +1,23 @@
+# /etc/udev/rules.d/10-usb-whitelist-example.rules
+## We only care about block devices in the chain
+## so if it's something else, this is all skipped
+SUBSYSTEM!="block", GOTO="usbms_end"
+
+## Approved USB mass-storage devices
+# Fake Corp USB 3.5" disks
+SUBSYSTEMS=="usb", ATTRS{manufacturer}=="FakeCorp", ATTRS{product}=="SuperFake USB", ATTRS{serial}=="000000000000001", GOTO="usbms_end"
+# Still Not Real 3.5" disks
+SUBSYSTEMS=="usb", ATTRS{manufacturer}=="STR", ATTRS{product}=="RuggedSNR", ATTRS{serial}=="20000000000000000", GOTO="usbms_end"
+SUBSYSTEMS=="usb", ATTRS{manufacturer}=="STR", ATTRS{product}=="RuggedSNR", ATTRS{serial}=="20000000000000001", GOTO="usbms_end"
+SUBSYSTEMS=="usb", ATTRS{manufacturer}=="STR", ATTRS{product}=="RuggedSNR", ATTRS{serial}=="20000000000000002", GOTO="usbms_end"
+SUBSYSTEMS=="usb", ATTRS{manufacturer}=="STR", ATTRS{product}=="BasicSNR", ATTRS{serial}=="30000000000000000", GOTO="usbms_end"
+# Still Not Real 2.5" disks
+SUBSYSTEMS=="usb", ATTRS{manufacturer}=="STR", ATTRS{product}=="MiniSNR", ATTRS{serial}=="40000000000000000", GOTO="usbms_end"
+SUBSYSTEMS=="usb", ATTRS{manufacturer}=="STR", ATTRS{product}=="MiniSNR", ATTRS{serial}=="40000000000000001", GOTO="usbms_end"
+
+# Send Notification
+ACTION=="add", SUBSYSTEM=="block", DRIVERS=="usb-storage", ENV{DEVTYPE}=="disk", RUN+="/bin/bash /usr/local/sbin/usb-massstorage-wrapper.sh"
+# Hide the drive from users
+SUBSYSTEMS=="usb", ENV{UDISKS_IGNORE}="1", ENV{UDISKS_PRESENTATION_HIDE}="1"
+
+LABEL="usbms_end"
